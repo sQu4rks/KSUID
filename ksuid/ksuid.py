@@ -3,6 +3,8 @@ import os
 import sys
 import time
 
+from functools import total_ordering
+
 from .base62 import decodebytes, encodebytes
 from .utils import int_from_bytes, int_to_bytes
 
@@ -13,7 +15,7 @@ EPOCH_TIME = 1400000000
 TIME_STAMP_LENGTH = 4  # number  bytes storing the timestamp
 BODY_LENGTH = 16  # Number of bytes consisting of the UUID
 
-
+@total_ordering
 class ksuid():
     """ The primary classes that encompasses ksuid functionality.
     When given optional timestamp argument, the ksuid will be generated
@@ -83,6 +85,29 @@ class ksuid():
         """ decodes KSUID from base62 encoding """
         v = decodebytes(data)
         return ksuid.fromBytes(v)
+
+    def __lt__(self, other) -> bool:
+        """ Compare two ksuids based on the timestamp.
+        
+        Note that the timestamps need to be at least one
+        second appart from each other to satisfy a  x < y
+        comparisson.
+
+        This adds the ability to get a k-sorted list using
+        the standard libraries sorted() function instead 
+        of a helper function.
+        """
+        if not isinstance(other, self.__class__):
+            raise TypeError(f"'<' not supported between instances of '{self.__class__}' and '{other.__class__}'")
+        
+        return self.getTimestamp() < other.getTimestamp()
+
+    def __eq__(self, other):
+        """Check if the "other" object is the same as this one"""
+        if not isinstance(other, self.__class__):
+            raise TypeError(f"'=' not supported between instances of '{self.__class__}' and '{other.__class__}'")
+        
+        return self.getTimestamp() == other.getTimestamp() and self.getPayload() == other.getPayload()
 
     def __str__(self):
         """ Creates a string representation of the Ksuid from the  bytelist """

@@ -1,10 +1,12 @@
 import datetime
 import unittest
+import time
 
 from ksuid import ksuid
 
 from ksuid.utils import sortKSUID
 
+DELAY_INTERVAL_IN_SEC = 2
 
 class KSUIDTests(unittest.TestCase):
     def setUp(self):
@@ -13,6 +15,7 @@ class KSUIDTests(unittest.TestCase):
             self.ksList.append(ksuid())
 
         self.ksuid1 = ksuid()
+        time.sleep(DELAY_INTERVAL_IN_SEC) # Sleep to ensure that the timestamp differs
         self.ksuid2 = ksuid()
 
     def testTimeStamp(self):
@@ -37,6 +40,18 @@ class KSUIDTests(unittest.TestCase):
                     continue
                 self.assertTrue(str(val2) != str(val))
 
+    def testLTOperator(self):
+        self.assertTrue(self.ksuid1 < self.ksuid2)
+
+    def testSortedOperation(self):
+        l = [self.ksuid2, self.ksuid1]
+
+        sorted_l = sorted(l)
+        self.assertTrue(l[0] == self.ksuid2)
+        self.assertTrue(l[1] == self.ksuid1)
+
+        self.assertTrue(sorted_l[0] == self.ksuid1)
+        self.assertTrue(sorted_l[1] == self.ksuid2)
 
 if __name__ == "__main__":
     unittest.main()
