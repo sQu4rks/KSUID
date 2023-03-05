@@ -42,7 +42,20 @@ class KSUIDTests(unittest.TestCase):
 
     def testLTOperator(self):
         self.assertTrue(self.ksuid1 < self.ksuid2)
+    
+    def testEQOperator(self):
+        self.assertTrue(self.ksuid1 == self.ksuid1)
+        self.assertTrue(self.ksuid2 == self.ksuid2)
 
+        self.assertFalse(self.ksuid1 == self.ksuid2)
+        self.assertFalse(self.ksuid2 == self.ksuid1)
+
+        for idx in range(1, len(self.ksList)):
+            prev = idx - 1
+            self.assertTrue(self.ksList[idx] == self.ksList[idx])
+            self.assertTrue(self.ksList[prev] == self.ksList[prev])
+            self.assertFalse(self.ksList[idx] == self.ksList[prev])
+        
     def testSortedOperation(self):
         l = [self.ksuid2, self.ksuid1]
 
