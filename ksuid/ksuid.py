@@ -103,11 +103,18 @@ class ksuid():
         return self.getTimestamp() < other.getTimestamp()
 
     def __eq__(self, other):
-        """Check if the "other" object is the same as this one"""
+        """Check if the "other" object is the same as this object."""
         if not isinstance(other, self.__class__):
             raise TypeError(f"'=' not supported between instances of '{self.__class__}' and '{other.__class__}'")
         
         return self.getTimestamp() == other.getTimestamp() and self.getPayload() == other.getPayload()
+
+    def __hash__(self):
+        key_list = [b for b in self.getPayload()]
+        key_list.insert(0, self.getTimestamp())
+
+        key_tuple = tuple(key_list)
+        return hash(key_tuple)
 
     def __str__(self):
         """ Creates a string representation of the Ksuid from the  bytelist """
